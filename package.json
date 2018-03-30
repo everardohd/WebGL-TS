@@ -1,0 +1,20 @@
+{
+  "name": "webgl_ts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "lite-server"
+  },
+  "author": "Everardo Hernandez D.",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/gl-matrix": "^2.4.0",
+    "lite-server": "^2.3.0"
+  },
+  "dependencies": {
+    "gl-matrix": "^2.4.0",
+    "systemjs": "^0.21.1"
+  }
+}
