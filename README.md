@@ -5,17 +5,23 @@ original project:
     https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Animating_textures_in_WebGL
 
 Dependencies:
-* NPM package manager
-> https://nodejs.org/es/
-* Typescript
-> http://www.typescriptlang.org
+* NPM package manager https://nodejs.org/es/
+* Typescript http://www.typescriptlang.org
+* Gulp https://gulpjs.com/
 
-Run:
+To run the project:
 > npm install
+> gulp
 
-> tsc
+VS Code:
+> Ctrl + Shift + B
 
-> npm run dev
+Live server without gulp
+> npm run dev 
+<br>
+\+
+<br>
+> tsc -w
  
 Tested on:
 * Chrome
