@@ -11,7 +11,7 @@ gulp.task('serve', ['tsc'], function () {
     gulp.watch("ts/*.ts", ['tsc']);
     gulp.watch([
         "*.html",
-        "js/main.js",
+        "js/*.js",
         "*.css"
     ]).on('change', browserSync.reload);
 });

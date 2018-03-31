@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var gl_matrix_1 = require("gl-matrix");
+var cube_1 = require("./cube");
 var cubeRotation = 0.0;
 var copyVideo = false;
 main();
@@ -100,72 +101,15 @@ function initBuffers(gl) {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
     var normalBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-    var vertexNormals = [
-        0.0, 0.0, 1.0,
-        0.0, 0.0, 1.0,
-        0.0, 0.0, 1.0,
-        0.0, 0.0, 1.0,
-        0.0, 0.0, -1.0,
-        0.0, 0.0, -1.0,
-        0.0, 0.0, -1.0,
-        0.0, 0.0, -1.0,
-        0.0, 1.0, 0.0,
-        0.0, 1.0, 0.0,
-        0.0, 1.0, 0.0,
-        0.0, 1.0, 0.0,
-        0.0, -1.0, 0.0,
-        0.0, -1.0, 0.0,
-        0.0, -1.0, 0.0,
-        0.0, -1.0, 0.0,
-        1.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        1.0, 0.0, 0.0,
-        -1.0, 0.0, 0.0,
-        -1.0, 0.0, 0.0,
-        -1.0, 0.0, 0.0,
-        -1.0, 0.0, 0.0,
-    ];
+    var vertexNormals = cube_1.Cube.vertexNormals;
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals), gl.STATIC_DRAW);
     var textureCoordBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
-    var textureCoordinates = [
-        0.0, 0.0,
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0,
-        0.0, 0.0,
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0,
-        0.0, 0.0,
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0,
-        0.0, 0.0,
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0,
-        0.0, 0.0,
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0,
-        0.0, 0.0,
-        1.0, 0.0,
-        1.0, 1.0,
-        0.0, 1.0,
-    ];
+    var textureCoordinates = cube_1.Cube.textureCoordinates;
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates), gl.STATIC_DRAW);
     var indexBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-    var indices = [
-        0, 1, 2, 0, 2, 3,
-        4, 5, 6, 4, 6, 7,
-        8, 9, 10, 8, 10, 11,
-        12, 13, 14, 12, 14, 15,
-        16, 17, 18, 16, 18, 19,
-        20, 21, 22, 20, 22, 23,
-    ];
+    var indices = cube_1.Cube.indices;
     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(indices), gl.STATIC_DRAW);
     return {
         position: positionBuffer,
@@ -173,31 +117,6 @@ function initBuffers(gl) {
         textureCoord: textureCoordBuffer,
         indices: indexBuffer,
     };
-}
-function initTexture(gl) {
-    var texture = gl.createTexture();
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    var level = 0;
-    var internalFormat = gl.RGBA;
-    var width = 1;
-    var height = 1;
-    var border = 0;
-    var srcFormat = gl.RGBA;
-    var srcType = gl.UNSIGNED_BYTE;
-    var pixel = new Uint8Array([0, 0, 255, 255]);
-    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, pixel);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    return texture;
-}
-function updateTexture(gl, texture, video) {
-    var level = 0;
-    var internalFormat = gl.RGBA;
-    var srcFormat = gl.RGBA;
-    var srcType = gl.UNSIGNED_BYTE;
-    gl.bindTexture(gl.TEXTURE_2D, texture);
-    gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, srcFormat, srcType, video);
 }
 function isPowerOf2(value) {
     return (value & (value - 1)) == 0;

@@ -21,7 +21,11 @@
       map: {
         "gl-matrix": "node_modules/gl-matrix/dist/gl-matrix-min.js"
       },
-      defaultJSExtension: true
+      packages: {
+        "/": {
+          defaultExtension: 'js'
+        }
+      }
     });
 
     SystemJS.import("js/main.js");

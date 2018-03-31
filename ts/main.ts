@@ -1,4 +1,6 @@
 import { vec3, mat4 } from "gl-matrix"
+import { Cube } from "./cube"
+import { Texture } from "./texture"
 
 var cubeRotation = 0.0;
 // will set to true when video can be copied to texture
@@ -73,7 +75,7 @@ function main() {
   // Look up which attributes our shader program is using
   // for aVertexPosition, aVertexNormal, aTextureCoord,
   // and look up uniform locations.
-  const programInfo = {
+  const programInfo: ProgramInfo = {
     program: shaderProgram,
     attribLocations: {
       vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
@@ -92,9 +94,9 @@ function main() {
   // objects we'll be drawing.
   const buffers = initBuffers(gl);
 
-  const texture = <WebGLTexture>initTexture(gl);
+  const texture: WebGLTexture = Texture.initTexture(gl);
 
-  const video = <HTMLVideoElement>setupVideo('videos/Firefox.mp4');
+  const video: HTMLVideoElement = setupVideo('videos/Firefox.mp4');
 
   var then = 0;
 
@@ -105,7 +107,7 @@ function main() {
     then = now;
 
     if (copyVideo) {
-      updateTexture(gl, texture, video);
+      Texture.updateTexture(gl, texture, video);
     }
 
     drawScene(gl, programInfo, buffers, texture, deltaTime);
@@ -218,43 +220,7 @@ function initBuffers(gl: WebGLRenderingContext) {
   const normalBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
 
-  const vertexNormals = [
-    // Front
-    0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0,
-    0.0, 0.0, 1.0,
-
-    // Back
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-    0.0, 0.0, -1.0,
-
-    // Top
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-    0.0, 1.0, 0.0,
-
-    // Bottom
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-    0.0, -1.0, 0.0,
-
-    // Right
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-    1.0, 0.0, 0.0,
-
-    // Left
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-    -1.0, 0.0, 0.0,
-  ];
+  const vertexNormals = Cube.vertexNormals;
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertexNormals),
     gl.STATIC_DRAW);
@@ -264,38 +230,7 @@ function initBuffers(gl: WebGLRenderingContext) {
   const textureCoordBuffer = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, textureCoordBuffer);
 
-  const textureCoordinates = [
-    // Front
-    0.0, 0.0,
-    1.0, 0.0,
-    1.0, 1.0,
-    0.0, 1.0,
-    // Back
-    0.0, 0.0,
-    1.0, 0.0,
-    1.0, 1.0,
-    0.0, 1.0,
-    // Top
-    0.0, 0.0,
-    1.0, 0.0,
-    1.0, 1.0,
-    0.0, 1.0,
-    // Bottom
-    0.0, 0.0,
-    1.0, 0.0,
-    1.0, 1.0,
-    0.0, 1.0,
-    // Right
-    0.0, 0.0,
-    1.0, 0.0,
-    1.0, 1.0,
-    0.0, 1.0,
-    // Left
-    0.0, 0.0,
-    1.0, 0.0,
-    1.0, 1.0,
-    0.0, 1.0,
-  ];
+  const textureCoordinates = Cube.textureCoordinates;
 
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(textureCoordinates),
     gl.STATIC_DRAW);
@@ -310,14 +245,7 @@ function initBuffers(gl: WebGLRenderingContext) {
   // indices into the vertex array to specify each triangle's
   // position.
 
-  const indices = [
-    0, 1, 2, 0, 2, 3,    // front
-    4, 5, 6, 4, 6, 7,    // back
-    8, 9, 10, 8, 10, 11,   // top
-    12, 13, 14, 12, 14, 15,   // bottom
-    16, 17, 18, 16, 18, 19,   // right
-    20, 21, 22, 20, 22, 23,   // left
-  ];
+  const indices = Cube.indices
 
   // Now send the element array to GL
 
@@ -332,51 +260,6 @@ function initBuffers(gl: WebGLRenderingContext) {
   };
 }
 
-//
-// Initialize a texture.
-//
-function initTexture(gl: WebGLRenderingContext) {
-  const texture = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-
-  // Because video havs to be download over the internet
-  // they might take a moment until it's ready so
-  // put a single pixel in the texture so we can
-  // use it immediately.
-  const level = 0;
-  const internalFormat = gl.RGBA;
-  const width = 1;
-  const height = 1;
-  const border = 0;
-  const srcFormat = gl.RGBA;
-  const srcType = gl.UNSIGNED_BYTE;
-  const pixel = new Uint8Array([0, 0, 255, 255]);  // opaque blue
-  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
-    width, height, border, srcFormat, srcType,
-    pixel);
-
-  // Turn off mips and set  wrapping to clamp to edge so it
-  // will work regardless of the dimensions of the video.
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-
-  return texture;
-}
-
-//
-// copy the video texture
-//
-function updateTexture(gl: WebGLRenderingContext, texture: WebGLTexture, video: HTMLVideoElement) {
-  const level = 0;
-  const internalFormat = gl.RGBA;
-  const srcFormat = gl.RGBA;
-  const srcType = gl.UNSIGNED_BYTE;
-  gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texImage2D(gl.TEXTURE_2D, level, internalFormat,
-    srcFormat, srcType, video);
-}
-
 function isPowerOf2(value: number) {
   return (value & (value - 1)) == 0;
 }
@@ -384,7 +267,7 @@ function isPowerOf2(value: number) {
 //
 // Draw the scene.
 //
-function drawScene(gl: WebGLRenderingContext, programInfo: any, buffers: any, texture: WebGLTexture, deltaTime: number) {
+function drawScene(gl: WebGLRenderingContext, programInfo: ProgramInfo, buffers: any, texture: WebGLTexture, deltaTime: number) {
   gl.clearColor(0.0, 0.0, 0.0, 1.0);  // Clear to black, fully opaque
   gl.clearDepth(1.0);                 // Clear everything
   gl.enable(gl.DEPTH_TEST);           // Enable depth testing
@@ -571,7 +454,7 @@ function initShaderProgram(gl: WebGLRenderingContext, vsSource: any, fsSource: a
 // creates a shader of the given type, uploads the source and
 // compiles it.
 //
-function loadShader(gl: WebGLRenderingContext, type: any, source: any) {
+function loadShader(gl: WebGLRenderingContext, type: number, source: string) {
   const shader = gl.createShader(type);
 
   // Send the source to the shader object
@@ -607,4 +490,19 @@ function get3DContext(canvas: HTMLCanvasElement): WebGLRenderingContext | null {
   }
 
   return context;
+}
+
+interface ProgramInfo {
+  program: WebGLProgram,
+  attribLocations: {
+    vertexPosition: number,
+    vertexNormal: number,
+    textureCoord: number
+  },
+  uniformLocations: {
+    projectionMatrix: WebGLUniformLocation,
+    modelViewMatrix: WebGLUniformLocation,
+    normalMatrix: WebGLUniformLocation,
+    uSampler: WebGLUniformLocation
+  },
 }
