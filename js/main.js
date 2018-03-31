@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var gl_matrix_1 = require("gl-matrix");
 var cube_1 = require("./cube");
+var texture_1 = require("./texture");
 var cubeRotation = 0.0;
 var copyVideo = false;
 main();
@@ -30,7 +31,7 @@ function main() {
         },
     };
     var buffers = initBuffers(gl);
-    var texture = initTexture(gl);
+    var texture = texture_1.Texture.initTexture(gl);
     var video = setupVideo('videos/Firefox.mp4');
     var then = 0;
     function render(now) {
@@ -38,7 +39,7 @@ function main() {
         var deltaTime = now - then;
         then = now;
         if (copyVideo) {
-            updateTexture(gl, texture, video);
+            texture_1.Texture.updateTexture(gl, texture, video);
         }
         drawScene(gl, programInfo, buffers, texture, deltaTime);
         requestAnimationFrame(render);

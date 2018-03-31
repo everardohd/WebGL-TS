@@ -16,12 +16,10 @@ To run the project:
 VS Code:
 > Ctrl + Shift + B
 
-Live server without gulp
-> npm run dev 
-<br>
-\+
-<br>
-> tsc -w
+Live server without gulp:
+in separate terminals run
+> tsc -w <br>
+> npm run dev
  
 Tested on:
 * Chrome
